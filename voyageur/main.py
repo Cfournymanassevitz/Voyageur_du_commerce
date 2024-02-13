@@ -19,14 +19,14 @@ def loadFile():
         for row in csvreader:
             data = row[0].split(";")
 
-            ville = Ville(data[0], data[1])
+            ville = Ville(float(data[0]), float(data[1]))
             listVilles.append(ville)
 
 
 
 
 loadFile()
-print(listVilles[1].longitude)
+print(listVilles)
 
 
 # def selectionsort(Ville):
@@ -70,20 +70,25 @@ def getDistance(ville):
 
     return distance
 
-m = folium.Map([45.171112, 5.695952], zoom_start=12)
+map = folium.Map([45.171112, 5.695952], zoom_start=12)
 
 for i in range(len(listVilles)):
-
     folium.Marker(
         location=[listVilles[i].latitude,listVilles[i].longitude],
-        tooltip="Click me!",
         popup="Timberline Lodge",
-        icon=folium.Icon(color="red"),
-    ).add_to(m)
+        icon=folium.Icon(color="blue"),).add_to(map)
 
-folium.PolyLine(listVilles, tooltip="Coast").add_to(Ville)
+def transObjetList(listVilles):
+    listTransph = []
+    for liste in listVilles:
+        listTransph.append((liste.latitude , liste.longitude))
+    return listTransph
 
+listObject=transObjetList(listVilles)
+print(listObject)
+folium.PolyLine(locations=listObject, color ='blue').add_to(map)
 
+map.save("index.html")
 
 # trail_coordinates = [
 #     (45.171112, 5.695952),
@@ -109,7 +114,7 @@ folium.PolyLine(listVilles, tooltip="Coast").add_to(Ville)
 
 
 
-m.save("index.html")
+
 
 # def 2-opt (m):
 #     for Ville_1 in range (1, n) :
