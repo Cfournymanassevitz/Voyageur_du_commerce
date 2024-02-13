@@ -5,69 +5,62 @@ import csv
 
 
 class Ville :
-    def __init__(self, latitude , longitude,distance):
+    def __init__(self, latitude, longitude):
         self.latitude = latitude
         self.longitude = longitude
-        self.distance = distance
 
 
-
+listVilles = []
 def loadFile():
-    Ville.clear()
-    filename = filedialog.askopenfilename(initialdir="./",
-                                          title="Selection du Fichier",
-                                          filetypes=(("Text files",
-                                                      "*.csv*"),
-                                                     ("all files",
-                                                      "*.*")))
-    changeLabelFile("Fichier : "+filename)
-    with open(filename, 'r', encoding='UTF-8') as file:
+
+    with open('../villes/ville.csv', 'r', encoding='UTF-8') as file:
         csvreader = csv.reader(file)
-        next(csvreader)  # skip header line
+        next(csvreader)
         for row in csvreader:
             data = row[0].split(";")
-            try:
-                ville = Ville(data[8], data[9], float(data[11]), float(data[12]), float(data[13]), 0)
-                ville.distance = getDistance(ville)
-                Ville.append(ville)
-            except:
-                continue
 
-def selectionsort(
-        Ville):
-    def swap(idxi, idxj):
-        temp = (
-            Ville)[idxi]
+            ville = Ville(data[0], data[1])
+            listVilles.append(ville)
 
-        Ville[idxi] = (
-            Ville)[idxj]
 
-        Ville[idxj] = temp
 
-    nb = len(
-        Ville)
-    for i in range(0, nb):
-        min = i
-        for j in range(i + 1, nb):
-            if (
-                    Ville[j].distance <
-                    Ville[min].distance):
-                min = j
-        swap(i, min)
 
-    return (
-        Ville)
+loadFile()
+print(listVilles[1].longitude)
 
-    return (
-        Ville)
+
+# def selectionsort(Ville):
+#     def swap(idxi, idxj):
+#         temp = (
+#             Ville)[idxi]
+#
+#         Ville[idxi] = (
+#             Ville)[idxj]
+#
+#         Ville[idxj] = temp
+#
+#     nb = len(
+#         Ville)
+#     for i in range(0, nb):
+#         min = i
+#         for j in range(i + 1, nb):
+#             if (
+#                     Ville[j].distance <
+#                     Ville[min].distance):
+#                 min = j
+#         swap(i, min)
+#
+#     return (Ville)
+
+
 
 def getDistance(ville):
     R = 6373.0
 
     lat1 = radians(45.166672)
     lon1 = radians(5.71667)
-    lat2 = radians(ville.latitude)
-    lon2 = radians(ville.longitude)
+    lat2 = radians(m.latitude)
+    lon2 = radians(m.longitude)
 
     dlon = lon2 - lon1
     dlat = lat2 - lat1
@@ -79,91 +72,19 @@ def getDistance(ville):
 
 m = folium.Map([45.171112, 5.695952], zoom_start=12)
 
-#
-# folium.Marker(
-#     location=[45.183152, 5.699386],
-#     tooltip="Click me!",
-#     popup="Timberline Lodge",
-#     icon=folium.Icon(color="red"),
-# ).add_to(m)
-#
-# folium.Marker(
-#     location=[45.174115, 5.711106],
-#     tooltip="Click me!",
-#     popup="Timberline Lodge",
-#     icon=folium.Icon(color="red"),
-# ).add_to(m)
-# folium.Marker(
-#     location=[45.171112, 5.695952],
-#     tooltip="Click me!",
-#     popup="Timberline Lodge",
-#     icon=folium.Icon(color="red"),
-# ).add_to(m)
-#
-#
-# folium.Marker(
-#     location=[45.176123, 5.722083],
-#     tooltip="Click me!",
-#     popup="Timberline Lodge",
-#     icon=folium.Icon(color="red"),
-# ).add_to(m)
-#
-# folium.Marker(
-#     location=[45.184301, 5.719791],
-#     tooltip="Click me!",
-#     popup="Timberline Lodge",
-#     icon=folium.Icon(color="red"),
-# ).add_to(m)
-#
-# folium.Marker(
-#     location=[45.184252, 5.730698],
-#     tooltip="Click me!",
-#     popup="Timberline Lodge",
-#     icon=folium.Icon(color="red"),
-# ).add_to(m)
-#
-# folium.Marker(
-#     location=[45.170588, 5.716664],
-#     tooltip="Click me!",
-#     popup="Timberline Lodge",
-#     icon=folium.Icon(color="red"),
-# ).add_to(m)
-#
-# folium.Marker(
-#     location=[45.193702, 5.691028],
-#     tooltip="Click me!",
-#     popup="Timberline Lodge",
-#     icon=folium.Icon(color="red"),
-# ).add_to(m)
-#
-# folium.Marker(
-#     location=[45.165641, 5.739938],
-#     tooltip="Click me!",
-#     popup="Timberline Lodge",
-#     icon=folium.Icon(color="red"),
-# ).add_to(m)
-#
-# folium.Marker(
-#     location=[45.178718, 5.744940],
-#     tooltip="Click me!",
-#     popup="Timberline Lodge",
-#     icon=folium.Icon(color="red"),
-# ).add_to(m)
-#
-# folium.Marker(
-#     location=[45.176857, 5.762518],
-#     tooltip="Click me!",
-#     popup="Timberline Lodge",
-#     icon=folium.Icon(color="red"),
-# ).add_to(m)
-#
-# folium.Marker(
-#     location=[45.188512, 5.767172],
-#     tooltip="Click me!",
-#     popup="Timberline Lodge",
-#     icon=folium.Icon(color="red"),
-# ).add_to(m)
-#
+for i in range(len(listVilles)):
+
+    folium.Marker(
+        location=[listVilles[i].latitude,listVilles[i].longitude],
+        tooltip="Click me!",
+        popup="Timberline Lodge",
+        icon=folium.Icon(color="red"),
+    ).add_to(m)
+
+folium.PolyLine(listVilles, tooltip="Coast").add_to(Ville)
+
+
+
 # trail_coordinates = [
 #     (45.171112, 5.695952),
 #     (45.183152, 5.699386),
@@ -181,35 +102,58 @@ m = folium.Map([45.171112, 5.695952], zoom_start=12)
 #
 # folium.PolyLine(trail_coordinates, tooltip="Coast").add_to(m)
 
-
-
-
-# def loadFile() :
-
-# m = folium.Map(location=(45.171112, 5.695952))
+#
+#
+#
 # folium.Map(tiles='https://{s}.tiles.example.com/{z}/{x}/{y}.png', attr='My Data Attribution')
 
-#
-# folium.Marker(
-#     location=[45.3288, -121.6625],
-#     tooltip="Click me!",
-#     popup="Mt. Hood Meadows",
-#     icon=folium.Icon(icon="cloud"),
-#
-# ).add_to(m)
-#
-# folium.Marker(
-#     location=[45.3311, -121.7113],
-#     tooltip="Click me!",
-#     popup="Timberline Lodge",
-#     icon=folium.Icon(color="green"),
-# ).add_to(m)
-#
-# m
-# m = folium.Map(location=[-71.38, -73.9], zoom_start=11)
-#
-#
-# folium.PolyLine(trail_coordinates, tooltip="Coast").add_to(m)
-#
-# m
+
+
 m.save("index.html")
+
+# def 2-opt (m):
+#     for Ville_1 in range (1, n) :
+#         for Ville_2 in range (1 + 1 , n):
+#             if Ville_1 - Ville_2 < 0 :
+#                 Ville_1 , Ville_2 = Ville_2, Ville_1
+
+
+
+# def reverse_subtour(path, i, j):
+#     while i < j:
+#         path[i % len(path)], path[j % len(path)] = path[j % len(path)], path[i % len(path)]
+#         i += 1
+#         j -= 1
+#
+# def calculate_gain(path, i, j):
+#     N = len(path)
+#     gain = 0
+#     if i + 1 < j - 1:
+#         gain = (
+#             distance(path[(i+N-1) % N], path[j % N]) +
+#             distance(path[j % N], path[(i+N+1) % N]) +
+#             distance(path[(j+N-1) % N], path[i % N]) +
+#             distance(path[i % N], path[(j+N+1) % N]) -
+#             distance(path[(i+N-1) % N], path[i % N]) -
+#             distance(path[i % N], path[(i+N+1) % N]) -
+#             distance(path[(j+N-1) % N], path[j % N]) -
+#             distance(path[j % N], path[(j+N+1) % N])
+#         )
+#     return gain
+#
+# def optimize_path(path):
+#     N = len(path)
+#     improved = True
+#     while improved:
+#         improved = False
+#         for i in range(N):
+#             for j in range(i + 1, N):
+#                 reverse_subtour(path, i, j)
+#                 gain = calculate_gain(path, i, j)
+#                 if gain < 0:
+#                     reverse_subtour(path, i, j)  # Revert the reversal
+#                 else:
+#                     improved = True
+#     return path
+#
+# optimize_path(m)
