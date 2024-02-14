@@ -67,14 +67,14 @@ def distance(lat1, lon1, lat2, lon2):
 
     return distance
 
-def distance_total(listObject):
+def distance_total(listDonnes):
 
     distance_to = 0
-    for i in range(0, len(listObject)-1):
+    for i in range(0, len(listDonnes)-1):
         avance = i +1
         #calculer distance entre i et avancer recupéré ville i et ville +1
-        ville1 = listObject[i]
-        ville2 = listObject[avance]
+        ville1 = listDonnes[i]
+        ville2 = listDonnes[avance]
         distance_actuel= distance(ville1[0], ville1[1], ville2[0], ville2[1])
         #ajouter cette distance a la ditance total
         distance_to += distance_actuel
@@ -82,21 +82,21 @@ def distance_total(listObject):
 
 
 
-def glouton(listObject):
-    solution = listObject[0:2]
-    full = len(listObject)
-    site_non_selectionne = listObject[3:full]
+def glouton(listDonnes):
+    solution = listDonnes[0:2]
+    full = len(listDonnes)
+    site_non_selectionne = listDonnes[3:full]
 
     while len(solution) < full and len(site_non_selectionne) != 0:
         prochaine_ville = site_non_selectionne.pop(0)
         # récupérer mini combinaison
-        miniCombi = getMiniCombinaison(solution,prochaine_ville)
+        plus_petite_combi= get_petite_cobinaison(solution,prochaine_ville)
         # remplacer le chemin par min combinaison
-        solution = miniCombi
+        solution = plus_petite_combi
 
     return solution
 
-def getMiniCombinaison(solution,prochaine_ville):
+def get_petite_cobinaison(solution,prochaine_ville):
     solution_optimal = []
     distance_optimal= float('inf')
 #boucle parcour solution ou on test prochaine ville dans solution
@@ -121,26 +121,14 @@ def transObjectList(listVilles):
     return listTrans
 
 
-listObject = (transObjectList(listVilles))
-print(listObject)
-folium.PolyLine(locations=glouton(listObject), color ='blue').add_to(map)
+listDonnes = (transObjectList(listVilles))
+print(listDonnes)
+folium.PolyLine(locations=glouton(listDonnes), color ='blue').add_to(map)
 map.save("index.html")
 
-print(glouton(listObject))
+print(glouton(listDonnes))
 
-print(distance_total(listObject))
-
-
-
-
-
-
-
-        # def 2-opt (m):
-#     for Ville_1 in range (1, n) :
-#         for Ville_2 in range (1 + 1 , n):
-#             if Ville_1 - Ville_2 < 0 :
-#                 Ville_1 , Ville_2 = Ville_2, Ville_1
+print(distance_total(listDonnes))
 
 
 
