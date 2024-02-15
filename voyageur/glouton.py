@@ -1,14 +1,17 @@
+import math
 from tkinter import filedialog
 
 import folium
 import csv
 from math import radians, sin, cos, atan2, sqrt
+from haversine import haversine
 
 
 class Ville :
-    def __init__(self, latitude, longitude):
+    def __init__(self, latitude, longitude, index):
         self.latitude = latitude
         self.longitude = longitude
+        self.index = index
 
 
 listVilles = []
@@ -17,10 +20,10 @@ def loadFile():
     with open('../villes/ville.csv', 'r', encoding='UTF-8') as file:
         csvreader = csv.reader(file)
         next(csvreader)
-        for row in csvreader:
+        for index, row in enumerate(csvreader):
             data = row[0].split(";")
 
-            ville = Ville(float(data[0]), float(data[1]))
+            ville = Ville(float(data[0]), float(data[1]), index)
             listVilles.append(ville)
 
 
@@ -28,47 +31,44 @@ def loadFile():
 
 loadFile()
 print(listVilles)
+listVilles = listVilles
 
 
-def getDistance(ville1, ville2):
-    R = 6373.0
+# def getDistance(city1, city2):
+#     phi1 = city1.longitude * math.pi/180
+#     phi2 = city2.longitude * math.pi/180
+#     delta_lon = (city2.latitude - city1.latitude) * math.pi/180
+#     R = 6371e3
+#     return math.acos(math.sin(phi1)*math.sin(phi2) + math.cos(phi1)*math.cos(phi2) * math.cos(delta_lon)) * R
 
-    lat1 = radians(ville1[0])
-    lon1 = radians(ville1[1])
-    lat2 = radians(ville2[0])
-    lon2 = radians(ville2[1])
-
-    dlon = lon2 - lon1
-    dlat = lat2 - lat1
-    a = sin(dlat / 2) ** 2 + cos(lat1) * cos(lat2) * sin(dlon / 2) ** 2
-    c = 2 * atan2(sqrt(a), sqrt(1 - a))
-    distance = R * c
-
-    return distance
-
-map = folium.Map([45.171112, 5.695952], zoom_start=12)
-
-for i in range(len(listVilles)):
-    folium.Marker(
-        location=[listVilles[i].latitude,listVilles[i].longitude],
-        popup="Timberline Lodge",
-        icon=folium.Icon(color="blue"),).add_to(map)
 
 
 
 def distance(lat1, lon1, lat2, lon2):
-    R = 6373.0
+    lat1, lon1, lat2, lon2 = map(math.radians, [lat1, lon1, lat2, lon2])
 
+    # Haversine formula
     dlon = lon2 - lon1
     dlat = lat2 - lat1
-    a = sin(dlat / 2) ** 2 + cos(lat1) * cos(lat2) * sin(dlon / 2) ** 2
-    c = 2 * atan2(sqrt(a), sqrt(1 - a))
-    distance = R * c
+    a = math.sin(dlat / 2) ** 2 + math.cos(lat1) * math.cos(lat2) * math.sin(dlon / 2) ** 2
+    c = 2 * math.asin(math.sqrt(a))
 
-    return distance
+    # Radius of earth in kilometers is 6371
+    km = 6371 * c
+    return km
+
+mapp = folium.Map([45.171112, 5.695952], zoom_start=12)
+
+for i in range(len(listVilles)):
+    folium.Marker(
+        location=[listVilles[i].latitude,listVilles[i].longitude],
+        popup=i,
+        icon=folium.Icon(color="blue"),).add_to(mapp)
 
 def distance_total(listDonnes):
-
+    # villeDebut = listDonnes[0]
+    # villeFin = listDonnes[-1]
+    # # distance_fin = distance(villeDebut[0], villeDebut[1], villeFin[0], villeFin[1])
     distance_to = 0
     for i in range(0, len(listDonnes)-1):
         avance = i +1
@@ -78,12 +78,13 @@ def distance_total(listDonnes):
         distance_actuel= distance(ville1[0], ville1[1], ville2[0], ville2[1])
         #ajouter cette distance a la ditance total
         distance_to += distance_actuel
+    distance_to += distance(listDonnes[0][0], listDonnes[0][1],listDonnes[-1][0],listDonnes[-1][1])
     return distance_to
 
 
 
 def glouton(listDonnes):
-    solution = listDonnes[0:2]
+    solution = listDonnes[0:3]
     full = len(listDonnes)
     site_non_selectionne = listDonnes[3:full]
 
@@ -93,7 +94,7 @@ def glouton(listDonnes):
         plus_petite_combi= get_petite_cobinaison(solution,prochaine_ville)
         # remplacer le chemin par min combinaison
         solution = plus_petite_combi
-
+    solution.append(solution[0])
     return solution
 
 def get_petite_cobinaison(solution,prochaine_ville):
@@ -123,14 +124,14 @@ def transObjectList(listVilles):
 
 listDonnes = (transObjectList(listVilles))
 print(listDonnes)
-folium.PolyLine(locations=glouton(listDonnes), color ='blue').add_to(map)
-map.save("index.html")
+folium.PolyLine(locations=glouton(listDonnes), color ='blue').add_to(mapp)
+mapp.save("index.html")
 
-print(glouton(listDonnes))
+# print()
 
-print(distance_total(listDonnes))
+print(distance_total(glouton(listDonnes)[0:len(listDonnes)-1]))
 
 
-
+# print(distance(listVilles[0].latitude,listVilles[0].longitude,listVilles[24].latitude,listVilles[24].longitude))
 
 
